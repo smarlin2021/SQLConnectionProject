@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/ClassLibrary1/ClassLibrary1.csproj": {}
+    "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/Pokemon-SQL-Project/ClassLibrary1/ClassLibrary1.csproj": {}
   },
   "projects": {
-    "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/ClassLibrary1/ClassLibrary1.csproj": {
+    "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/Pokemon-SQL-Project/ClassLibrary1/ClassLibrary1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/ClassLibrary1/ClassLibrary1.csproj",
+        "projectUniqueName": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/Pokemon-SQL-Project/ClassLibrary1/ClassLibrary1.csproj",
         "projectName": "ClassLibrary1",
-        "projectPath": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/ClassLibrary1/ClassLibrary1.csproj",
+        "projectPath": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/Pokemon-SQL-Project/ClassLibrary1/ClassLibrary1.csproj",
         "packagesPath": "/Users/sierramarlin/.nuget/packages/",
-        "outputPath": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/ClassLibrary1/obj/",
+        "outputPath": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/Pokemon-SQL-Project/ClassLibrary1/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/sierramarlin/.nuget/NuGet/NuGet.Config"

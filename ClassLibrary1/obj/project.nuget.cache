@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xy0/Qv6jFFo=",
+  "dgSpecHash": "4BTUnDHrFs4=",
   "success": true,
-  "projectFilePath": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/ClassLibrary1/ClassLibrary1.csproj",
+  "projectFilePath": "/Users/sierramarlin/Documents/GitHub/SQLConnectionProject/Pokemon-SQL-Project/ClassLibrary1/ClassLibrary1.csproj",
   "expectedPackageFiles": [
     "/Users/sierramarlin/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "/Users/sierramarlin/.nuget/packages/dapper/2.1.72/dapper.2.1.72.nupkg.sha512",
