@@ -1,0 +1,158 @@
+@page "/bulkinsert"
+@rendermode InteractiveServer
+@using ClassLibrary1
+@inject DataAccess _data
+@inject IConfiguration _config
+
+<h3>Bulk Insert Cards</h3>
+
+<p>Enter one Pokémon name per line:</p>
+
+<textarea @bind="inputText" rows="10" cols="40" placeholder="Bulbasaur 
+Charmander
+Squirtle"></textarea>
+
+<br />
+<button class="btn btn-primary" @onclick="BulkInsertCards">Insert All</button>
+<button class="btn btn-secondary" @onclick="ClearForm">Clear</button>
+<button class="btn btn-danger" @onclick="PromptClean">Clean Database</button>
+
+@if (showConfirm)
+{
+    <div style="border:1px solid red; padding:10px; margin-top:10px; border-radius:5px;">
+        <p style="color:red"><strong>Warning:</strong> This will clean all pokemon names in the database. Rows with no valid characters will be deleted. Are you sure?</p>
+        <button class="btn btn-danger" @onclick="CleanDatabase">Yes, Clean It</button>
+        <button class="btn btn-secondary" @onclick="() => { showConfirm = false; StateHasChanged(); }">Cancel</button>
+    </div>
+}
+<hr />
+
+<p><strong>Status:</strong> @status</p>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red"><strong>Error:</strong> @errorMessage</p>
+}
+
+@if (insertedCards.Count > 0)
+{
+    <h5>Inserted @insertedCards.Count cards:</h5>
+    @foreach (var card in insertedCards)
+    {
+        <p>@card.pokemon</p>
+    }
+}
+
+@if (skippedCards.Count > 0)
+{
+    <h5 style="color:orange">Skipped @skippedCards.Count invalid records:</h5>
+    @foreach (var name in skippedCards)
+    {
+        <p style="color:orange">@name</p>
+    }
+}
+
+@code {
+    string inputText = "";
+    string status = "idle";
+    string errorMessage = "";
+    bool showConfirm = false;
+    List<CardModel> insertedCards = new();
+    List<string> skippedCards = new();
+
+    private async Task BulkInsertCards()
+    {
+        try
+        {
+            errorMessage = "";
+            insertedCards = new();
+            skippedCards = new();
+
+            var pokemonNames = inputText
+                .Split('\n')
+                .Select(p => p.Trim())
+                .Where(p => !string.IsNullOrEmpty(p))
+                .ToList();
+
+            if (pokemonNames.Count == 0)
+            {
+                status = "No data entered.";
+                return;
+            }
+
+            status = $"Cleaning and inserting {pokemonNames.Count} records...";
+            StateHasChanged();
+
+            var records = new List<CardModel>();
+
+            foreach (var name in pokemonNames)
+            {
+                string cleaned = _data.CleanPokemonName(name);
+
+                if (string.IsNullOrEmpty(cleaned))
+                {
+                    skippedCards.Add(name);
+                    continue;
+                }
+
+                records.Add(new CardModel { pokemon = cleaned });
+            }
+
+            if (records.Count == 0)
+            {
+                status = "No valid records after cleaning.";
+                return;
+            }
+
+            string sql = "INSERT INTO cards.card_table (pokemon) VALUES (@pokemon)";
+            await _data.BulkInsert(sql, records, _config.GetConnectionString("default"));
+
+            insertedCards = records;
+            status = $"Successfully inserted {records.Count} cards!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"{ex.Message} | Inner: {ex.InnerException?.Message}";
+            status = "Insert failed.";
+        }
+
+        StateHasChanged();
+    }
+
+    private void PromptClean()
+    {
+        showConfirm = true;
+        StateHasChanged();
+    }
+
+    private async Task CleanDatabase()
+    {
+        try
+        {
+            status = "Cleaning all records...";
+            showConfirm = false;
+            StateHasChanged();
+
+            await _data.CleanAllPokemonNames(_config.GetConnectionString("default"));
+
+            status = "Database cleaned successfully!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Clean FAILED: {ex.Message} | Inner: {ex.InnerException?.Message}";
+            status = "Clean failed.";
+        }
+
+        StateHasChanged();
+    }
+
+    private void ClearForm()
+    {
+        inputText = "";
+        status = "idle";
+        errorMessage = "";
+        insertedCards = new();
+        skippedCards = new();
+        StateHasChanged();
+    }
+}

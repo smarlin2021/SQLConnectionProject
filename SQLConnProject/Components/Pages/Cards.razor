@@ -1,0 +1,85 @@
+﻿@page "/cards"
+@rendermode InteractiveServer
+
+@using ClassLibrary1;
+@using Org.BouncyCastle.Security
+
+@inject DataAccess _data
+@inject IConfiguration _config
+
+
+
+<h3>Cards</h3>
+
+<button class="btn btn-primary" @onclick="InsertData">Insert Data</button>
+<button class="btn btn-secondary" @onclick="LoadCards">Reload Cards</button>
+<button class="btn btn-danger" @onclick="DeleteData">Delete Card</button>
+
+<p><strong>Card Count:</strong> @cards.Count</p>
+
+<p>Here are some of the cards in the database:</p>
+
+@if (cards == null)
+{
+    <p><em>Loading...</em></p>
+}
+
+else
+{
+    @foreach (var card in cards)
+    {
+        <p>ID: @card.id</p>
+        <p>Pokemon: @card.pokemon</p>
+    }
+}
+
+@code {
+
+List<CardModel> cards = new();
+string errorMessage = "none";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCards();
+    }
+    private async Task LoadCards()
+    {
+        try
+        {
+            string sql = "SELECT * FROM cards.card_table";
+            cards = await _data.LoadData<CardModel, dynamic>(sql, new { }, _config.GetConnectionString("default"));
+            errorMessage = "none";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading cards: {ex.Message}";
+        }
+    }
+    private async Task InsertData()
+    {try {
+       string sql = "INSERT INTO cards.card_table (pokemon) VALUES (@pokemon)";
+       await _data.SaveData(sql, new { pokemon = "Cloyster" }, _config.GetConnectionString("default"));
+       errorMessage = "none";
+       await OnInitializedAsync(); 
+    }
+     catch (Exception ex)
+    {
+        errorMessage = $"Error inserting data: {ex.Message}";
+    }
+}
+    private async Task DeleteData()
+    {
+        try
+        {
+            string sql = "DELETE FROM cards.card_table WHERE pokemon = @pokemon";
+            await _data.SaveData(sql, new { pokemon = "Cloyster" }, _config.GetConnectionString("default"));
+            errorMessage = "none";
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error deleting data: {ex.Message}";
+        }
+
+}
+}
